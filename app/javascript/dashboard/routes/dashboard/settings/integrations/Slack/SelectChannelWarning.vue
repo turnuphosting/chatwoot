@@ -1,6 +1,66 @@
+<script>
+import { mapGetters } from 'vuex';
+import { useAlert } from 'dashboard/composables';
+import globalConfigMixin from 'shared/mixins/globalConfigMixin';
+import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
+
+export default {
+  mixins: [globalConfigMixin],
+  props: {
+    hasConnectedAChannel: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  setup() {
+    const { formatMessage } = useMessageFormatter();
+    return {
+      formatMessage,
+    };
+  },
+  data() {
+    return { selectedChannelId: '', availableChannels: [] };
+  },
+  computed: {
+    ...mapGetters({
+      globalConfig: 'globalConfig/get',
+      uiFlags: 'integrations/getUIFlags',
+    }),
+    errorDescription() {
+      return !this.hasConnectedAChannel
+        ? this.$t('INTEGRATION_SETTINGS.SLACK.SELECT_CHANNEL.DESCRIPTION')
+        : this.$t('INTEGRATION_SETTINGS.SLACK.SELECT_CHANNEL.EXPIRED');
+    },
+  },
+  methods: {
+    async fetchChannels() {
+      try {
+        this.availableChannels = await this.$store.dispatch(
+          'integrations/listAllSlackChannels'
+        );
+        this.availableChannels.sort((c1, c2) => c1.name - c2.name);
+      } catch {
+        this.$t('INTEGRATION_SETTINGS.SLACK.FAILED_TO_FETCH_CHANNELS');
+        this.availableChannels = [];
+      }
+    },
+    async updateIntegration() {
+      try {
+        await this.$store.dispatch('integrations/updateSlack', {
+          referenceId: this.selectedChannelId,
+        });
+        useAlert(this.$t('INTEGRATION_SETTINGS.SLACK.UPDATE_SUCCESS'));
+      } catch (error) {
+        useAlert(error.message || 'INTEGRATION_SETTINGS.SLACK.UPDATE_ERROR');
+      }
+    },
+  },
+};
+</script>
+
 <template>
   <div
-    class="rounded-md bg-yellow-50 border border-yellow-200 dark:border-slate-700 dark:bg-slate-800 px-6 py-4 mb-4"
+    class="px-6 py-4 mb-4 border border-yellow-200 rounded-md bg-yellow-50 dark:border-slate-700 dark:bg-slate-800"
   >
     <div class="flex">
       <div class="flex-shrink-0 mt-0.5">
@@ -12,18 +72,18 @@
       </div>
       <div class="ml-3">
         <p
-          class="text-base font-semibold text-yellow-900 dark:text-yellow-500 mb-1"
+          class="mb-1 text-base font-semibold text-yellow-900 dark:text-yellow-500"
         >
           {{
             $t('INTEGRATION_SETTINGS.SLACK.SELECT_CHANNEL.ATTENTION_REQUIRED')
           }}
         </p>
-        <div class="text-sm text-yellow-800 dark:text-yellow-600 mt-2">
+        <div class="mt-2 text-sm text-yellow-800 dark:text-yellow-600">
           <p
             v-dompurify-html="
               formatMessage(
                 useInstallationName(
-                  $t('INTEGRATION_SETTINGS.SLACK.SELECT_CHANNEL.DESCRIPTION'),
+                  errorDescription,
                   globalConfig.installationName
                 ),
                 false
@@ -33,7 +93,7 @@
         </div>
       </div>
     </div>
-    <div class="ml-8 mt-2">
+    <div v-if="!hasConnectedAChannel" class="mt-2 ml-8">
       <woot-submit-button
         v-if="!availableChannels.length"
         button-class="smooth small warning"
@@ -47,7 +107,7 @@
       <div v-else class="inline-flex">
         <select
           v-model="selectedChannelId"
-          class="h-8 border-yellow-300 border mr-4 text-xs leading-4 py-1"
+          class="h-8 py-1 mr-4 text-xs leading-4 border border-yellow-300"
         >
           <option value="">
             {{ $t('INTEGRATION_SETTINGS.SLACK.SELECT_CHANNEL.OPTION_LABEL') }}
@@ -71,47 +131,3 @@
     </div>
   </div>
 </template>
-<script>
-import { mapGetters } from 'vuex';
-import globalConfigMixin from 'shared/mixins/globalConfigMixin';
-import messageFormatterMixin from 'shared/mixins/messageFormatterMixin';
-import alertMixin from 'shared/mixins/alertMixin';
-
-export default {
-  mixins: [alertMixin, globalConfigMixin, messageFormatterMixin],
-  data() {
-    return { selectedChannelId: '', availableChannels: [] };
-  },
-  computed: {
-    ...mapGetters({
-      globalConfig: 'globalConfig/get',
-      uiFlags: 'integrations/getUIFlags',
-    }),
-  },
-  methods: {
-    async fetchChannels() {
-      try {
-        this.availableChannels = await this.$store.dispatch(
-          'integrations/listAllSlackChannels'
-        );
-        this.availableChannels.sort((c1, c2) => c1.name - c2.name);
-      } catch {
-        this.$t('INTEGRATION_SETTINGS.SLACK.FAILED_TO_FETCH_CHANNELS');
-        this.availableChannels = [];
-      }
-    },
-    async updateIntegration() {
-      try {
-        await this.$store.dispatch('integrations/updateSlack', {
-          referenceId: this.selectedChannelId,
-        });
-        this.showAlert(this.$t('INTEGRATION_SETTINGS.SLACK.UPDATE_SUCCESS'));
-      } catch (error) {
-        this.showAlert(
-          error.message || 'INTEGRATION_SETTINGS.SLACK.UPDATE_ERROR'
-        );
-      }
-    },
-  },
-};
-</script>

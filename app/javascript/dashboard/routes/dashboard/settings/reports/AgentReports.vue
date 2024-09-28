@@ -1,15 +1,5 @@
-<template>
-  <woot-reports
-    key="agent-reports"
-    type="agent"
-    getter-key="agents/getAgents"
-    action-key="agents/get"
-    :download-button-label="$t('REPORT.DOWNLOAD_AGENT_REPORTS')"
-  />
-</template>
-
 <script>
-import WootReports from './components/WootReports';
+import WootReports from './components/WootReports.vue';
 
 export default {
   components: {
@@ -17,3 +7,13 @@ export default {
   },
 };
 </script>
+
+<template>
+  <WootReports
+    key="agent-reports"
+    type="agent"
+    getter-key="agents/getAgents"
+    action-key="agents/get"
+    :download-button-label="$t('REPORT.DOWNLOAD_AGENT_REPORTS')"
+  />
+</template>

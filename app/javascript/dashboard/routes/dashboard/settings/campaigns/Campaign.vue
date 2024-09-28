@@ -1,17 +1,90 @@
+<script>
+import { mapGetters } from 'vuex';
+import { useAlert } from 'dashboard/composables';
+import { useCampaign } from 'shared/composables/useCampaign';
+import CampaignsTable from './CampaignsTable.vue';
+import EditCampaign from './EditCampaign.vue';
+export default {
+  components: {
+    CampaignsTable,
+    EditCampaign,
+  },
+  props: {
+    type: {
+      type: String,
+      default: '',
+    },
+  },
+  setup() {
+    const { campaignType } = useCampaign();
+    return { campaignType };
+  },
+  data() {
+    return {
+      showEditPopup: false,
+      selectedCampaign: {},
+      showDeleteConfirmationPopup: false,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      uiFlags: 'campaigns/getUIFlags',
+    }),
+    campaigns() {
+      return this.$store.getters['campaigns/getCampaigns'](this.campaignType);
+    },
+    showEmptyResult() {
+      const hasEmptyResults =
+        !this.uiFlags.isFetching && this.campaigns.length === 0;
+      return hasEmptyResults;
+    },
+  },
+  methods: {
+    openEditPopup(campaign) {
+      this.selectedCampaign = campaign;
+      this.showEditPopup = true;
+    },
+    hideEditPopup() {
+      this.showEditPopup = false;
+    },
+    openDeletePopup(campaign) {
+      this.showDeleteConfirmationPopup = true;
+      this.selectedCampaign = campaign;
+    },
+    closeDeletePopup() {
+      this.showDeleteConfirmationPopup = false;
+    },
+    confirmDeletion() {
+      this.closeDeletePopup();
+      const { id } = this.selectedCampaign;
+      this.deleteCampaign(id);
+    },
+    async deleteCampaign(id) {
+      try {
+        await this.$store.dispatch('campaigns/delete', id);
+        useAlert(this.$t('CAMPAIGN.DELETE.API.SUCCESS_MESSAGE'));
+      } catch (error) {
+        useAlert(this.$t('CAMPAIGN.DELETE.API.ERROR_MESSAGE'));
+      }
+    },
+  },
+};
+</script>
+
 <template>
-  <div class="flex-1 overflow-auto p-4">
-    <campaigns-table
+  <div class="flex-1 overflow-auto">
+    <CampaignsTable
       :campaigns="campaigns"
       :show-empty-result="showEmptyResult"
       :is-loading="uiFlags.isFetching"
       :campaign-type="type"
-      @on-edit-click="openEditPopup"
-      @on-delete-click="openDeletePopup"
+      @edit="openEditPopup"
+      @delete="openDeletePopup"
     />
     <woot-modal :show.sync="showEditPopup" :on-close="hideEditPopup">
-      <edit-campaign
+      <EditCampaign
         :selected-campaign="selectedCampaign"
-        @on-close="hideEditPopup"
+        @onClose="hideEditPopup"
       />
     </woot-modal>
     <woot-delete-modal
@@ -25,79 +98,6 @@
     />
   </div>
 </template>
-<script>
-import { mapGetters } from 'vuex';
-import alertMixin from 'shared/mixins/alertMixin';
-import campaignMixin from 'shared/mixins/campaignMixin';
-import CampaignsTable from './CampaignsTable';
-import EditCampaign from './EditCampaign';
-export default {
-  components: {
-    CampaignsTable,
-    EditCampaign,
-  },
-  mixins: [alertMixin, campaignMixin],
-  props: {
-    type: {
-      type: String,
-      default: '',
-    },
-  },
-  data() {
-    return {
-      showEditPopup: false,
-      selectedCampaign: {},
-      showDeleteConfirmationPopup: false,
-    };
-  },
-  computed: {
-    ...mapGetters({
-      uiFlags: 'campaigns/getUIFlags',
-      labelList: 'labels/getLabels',
-    }),
-    campaigns() {
-      return this.$store.getters['campaigns/getCampaigns'](this.campaignType);
-    },
-    showEmptyResult() {
-      const hasEmptyResults =
-        !this.uiFlags.isFetching && this.campaigns.length === 0;
-      return hasEmptyResults;
-    },
-  },
-  methods: {
-    openEditPopup(response) {
-      const { row: campaign } = response;
-      this.selectedCampaign = campaign;
-      this.showEditPopup = true;
-    },
-    hideEditPopup() {
-      this.showEditPopup = false;
-    },
-    openDeletePopup(response) {
-      this.showDeleteConfirmationPopup = true;
-      this.selectedCampaign = response;
-    },
-    closeDeletePopup() {
-      this.showDeleteConfirmationPopup = false;
-    },
-    confirmDeletion() {
-      this.closeDeletePopup();
-      const {
-        row: { id },
-      } = this.selectedCampaign;
-      this.deleteCampaign(id);
-    },
-    async deleteCampaign(id) {
-      try {
-        await this.$store.dispatch('campaigns/delete', id);
-        this.showAlert(this.$t('CAMPAIGN.DELETE.API.SUCCESS_MESSAGE'));
-      } catch (error) {
-        this.showAlert(this.$t('CAMPAIGN.DELETE.API.ERROR_MESSAGE'));
-      }
-    },
-  },
-};
-</script>
 
 <style scoped lang="scss">
 .button-wrapper {

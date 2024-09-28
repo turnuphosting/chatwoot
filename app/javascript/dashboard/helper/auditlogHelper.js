@@ -30,6 +30,11 @@ const translationKeys = {
   'accountuser:create': `AUDIT_LOGS.ACCOUNT_USER.ADD`,
   'accountuser:update:self': `AUDIT_LOGS.ACCOUNT_USER.EDIT.SELF`,
   'accountuser:update:other': `AUDIT_LOGS.ACCOUNT_USER.EDIT.OTHER`,
+  'accountuser:update:deleted': `AUDIT_LOGS.ACCOUNT_USER.EDIT.DELETED`,
+  'inboxmember:create': `AUDIT_LOGS.INBOX_MEMBER.ADD`,
+  'inboxmember:destroy': `AUDIT_LOGS.INBOX_MEMBER.REMOVE`,
+  'teammember:create': `AUDIT_LOGS.TEAM_MEMBER.ADD`,
+  'teammember:destroy': `AUDIT_LOGS.TEAM_MEMBER.REMOVE`,
   'account:update': `AUDIT_LOGS.ACCOUNT.EDIT`,
 };
 
@@ -85,9 +90,9 @@ function handleAccountUserCreate(auditLogItem, translationPayload, agentList) {
 }
 
 function handleAccountUserUpdate(auditLogItem, translationPayload, agentList) {
-  if (auditLogItem.user_id !== auditLogItem.auditable.user_id) {
+  if (auditLogItem.user_id !== auditLogItem.auditable?.user_id) {
     translationPayload.user = getAgentName(
-      auditLogItem.auditable.user_id,
+      auditLogItem.auditable?.user_id,
       agentList
     );
   }
@@ -102,6 +107,58 @@ function handleAccountUserUpdate(auditLogItem, translationPayload, agentList) {
   return translationPayload;
 }
 
+function setUserInPayload(auditLogItem, translationPayload, agentList) {
+  const userIdChange = auditLogItem.audited_changes.user_id;
+  if (userIdChange && userIdChange !== undefined) {
+    translationPayload.user = getAgentName(userIdChange, agentList);
+  }
+  return translationPayload;
+}
+
+function setTeamIdInPayload(auditLogItem, translationPayload) {
+  if (auditLogItem.audited_changes.team_id) {
+    translationPayload.team_id = auditLogItem.audited_changes.team_id;
+  }
+  return translationPayload;
+}
+
+function setInboxIdInPayload(auditLogItem, translationPayload) {
+  if (auditLogItem.audited_changes.inbox_id) {
+    translationPayload.inbox_id = auditLogItem.audited_changes.inbox_id;
+  }
+  return translationPayload;
+}
+
+function handleInboxTeamMember(auditLogItem, translationPayload, agentList) {
+  if (auditLogItem.audited_changes) {
+    translationPayload = setUserInPayload(
+      auditLogItem,
+      translationPayload,
+      agentList
+    );
+    translationPayload = setTeamIdInPayload(auditLogItem, translationPayload);
+    translationPayload = setInboxIdInPayload(auditLogItem, translationPayload);
+  }
+  return translationPayload;
+}
+
+function handleAccountUser(
+  auditLogItem,
+  translationPayload,
+  agentList,
+  action
+) {
+  if (action === 'create') {
+    return handleAccountUserCreate(auditLogItem, translationPayload, agentList);
+  }
+
+  if (action === 'update') {
+    return handleAccountUserUpdate(auditLogItem, translationPayload, agentList);
+  }
+
+  return translationPayload;
+}
+
 export function generateTranslationPayload(auditLogItem, agentList) {
   let translationPayload = {
     agentName: getAgentName(auditLogItem.user_id, agentList),
@@ -112,24 +169,35 @@ export function generateTranslationPayload(auditLogItem, agentList) {
   const action = auditLogItem.action.toLowerCase();
 
   if (auditableType === 'accountuser') {
-    if (action === 'create') {
-      translationPayload = handleAccountUserCreate(
-        auditLogItem,
-        translationPayload,
-        agentList
-      );
-    }
+    translationPayload = handleAccountUser(
+      auditLogItem,
+      translationPayload,
+      agentList,
+      action
+    );
+  }
 
-    if (action === 'update') {
-      translationPayload = handleAccountUserUpdate(
-        auditLogItem,
-        translationPayload,
-        agentList
-      );
-    }
+  if (auditableType === 'inboxmember' || auditableType === 'teammember') {
+    translationPayload = handleInboxTeamMember(
+      auditLogItem,
+      translationPayload,
+      agentList
+    );
   }
 
   return translationPayload;
+}
+
+function getAccountUserUpdateSuffix(auditLogItem) {
+  if (auditLogItem.auditable === null) {
+    // If the user is deleted, we don't need to check if the user is the same as the auditLogItem.user_id
+    // Else we can use the deleted translation key
+    // It doesn't need the agent name
+    return ':deleted';
+  }
+  return auditLogItem.user_id === auditLogItem.auditable.user_id
+    ? ':self'
+    : ':other';
 }
 
 export const generateLogActionKey = auditLogItem => {
@@ -138,10 +206,7 @@ export const generateLogActionKey = auditLogItem => {
   let logActionKey = `${auditableType}:${action}`;
 
   if (auditableType === 'accountuser' && action === 'update') {
-    logActionKey +=
-      auditLogItem.user_id === auditLogItem.auditable.user_id
-        ? ':self'
-        : ':other';
+    logActionKey += getAccountUserUpdateSuffix(auditLogItem);
   }
 
   return translationKeys[logActionKey] || '';

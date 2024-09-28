@@ -18,7 +18,7 @@
 #  index_response_documents_on_response_source_id  (response_source_id)
 #
 class ResponseDocument < ApplicationRecord
-  has_many :responses, dependent: :destroy
+  has_many :responses, dependent: :destroy_async
   belongs_to :account
   belongs_to :response_source
 
@@ -35,12 +35,12 @@ class ResponseDocument < ApplicationRecord
   def ensure_content
     return unless content.nil?
 
-    ResponseDocumentContentJob.perform_later(self)
+    ResponseBot::ResponseDocumentContentJob.perform_later(self)
   end
 
   def handle_content_change
     return unless saved_change_to_content? && content.present?
 
-    ResponseBuilderJob.perform_later(self)
+    ResponseBot::ResponseBuilderJob.perform_later(self)
   end
 end

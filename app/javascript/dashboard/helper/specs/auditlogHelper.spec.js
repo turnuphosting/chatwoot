@@ -16,10 +16,8 @@ describe('Helper functions', () => {
       const changes = {
         role: [0, 1],
       };
-      const {
-        changes: extractedChanges,
-        values,
-      } = extractChangedAccountUserValues(changes);
+      const { changes: extractedChanges, values } =
+        extractChangedAccountUserValues(changes);
       expect(extractedChanges).toEqual(['role']);
       expect(values).toEqual(['administrator']);
     });
@@ -28,10 +26,8 @@ describe('Helper functions', () => {
       const changes = {
         availability: [0, 2],
       };
-      const {
-        changes: extractedChanges,
-        values,
-      } = extractChangedAccountUserValues(changes);
+      const { changes: extractedChanges, values } =
+        extractChangedAccountUserValues(changes);
       expect(extractedChanges).toEqual(['availability']);
       expect(values).toEqual(['busy']);
     });
@@ -41,10 +37,8 @@ describe('Helper functions', () => {
         role: [1, 0],
         availability: [1, 2],
       };
-      const {
-        changes: extractedChanges,
-        values,
-      } = extractChangedAccountUserValues(changes);
+      const { changes: extractedChanges, values } =
+        extractChangedAccountUserValues(changes);
       expect(extractedChanges).toEqual(['role', 'availability']);
       expect(values).toEqual(['agent', 'busy']);
     });
@@ -98,6 +92,48 @@ describe('Helper functions', () => {
       });
     });
 
+    it('should handle InboxMember or TeamMember', () => {
+      const auditLogItemInboxMember = {
+        auditable_type: 'InboxMember',
+        action: 'create',
+        audited_changes: {
+          user_id: 2,
+        },
+        user_id: 1,
+        auditable_id: 789,
+      };
+
+      const payloadInboxMember = generateTranslationPayload(
+        auditLogItemInboxMember,
+        agentList
+      );
+      expect(payloadInboxMember).toEqual({
+        agentName: 'Agent 1',
+        id: 789,
+        user: 'Agent 2',
+      });
+
+      const auditLogItemTeamMember = {
+        auditable_type: 'TeamMember',
+        action: 'create',
+        audited_changes: {
+          user_id: 3,
+        },
+        user_id: 1,
+        auditable_id: 789,
+      };
+
+      const payloadTeamMember = generateTranslationPayload(
+        auditLogItemTeamMember,
+        agentList
+      );
+      expect(payloadTeamMember).toEqual({
+        agentName: 'Agent 1',
+        id: 789,
+        user: 'Agent 3',
+      });
+    });
+
     it('should handle generic case like Team create', () => {
       const auditLogItem = {
         auditable_type: 'Team',
@@ -141,6 +177,18 @@ describe('Helper functions', () => {
 
       const logActionKey = generateLogActionKey(auditLogItem);
       expect(logActionKey).toEqual('AUDIT_LOGS.ACCOUNT_USER.EDIT.OTHER');
+    });
+
+    it('should generate correct action key when updating a deleted user', () => {
+      const auditLogItem = {
+        auditable_type: 'AccountUser',
+        action: 'update',
+        user_id: 1,
+        auditable: null,
+      };
+
+      const logActionKey = generateLogActionKey(auditLogItem);
+      expect(logActionKey).toEqual('AUDIT_LOGS.ACCOUNT_USER.EDIT.DELETED');
     });
   });
 });

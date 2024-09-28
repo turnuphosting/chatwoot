@@ -2,10 +2,13 @@
   "TEAMS_SETTINGS": {
     "NEW_TEAM": "Új csapat hozzárendelése",
     "HEADER": "Csapatok",
-    "SIDEBAR_TXT": "<p><b>Teams</b></p> <p>Teams let you organize your agents into groups based on their responsibilities. <br /> An agent can be part of multiple teams. You can assign conversations to a team when you are working collaboratively. </p>",
+    "LOADING": "Fetching teams",
+    "DESCRIPTION": "Teams allow you to organize agents into groups based on their responsibilities. An agent can belong to multiple teams. When working collaboratively, you can assign conversations to specific teams.",
+    "LEARN_MORE": "Learn more about teams",
     "LIST": {
       "404": "Ebben a fiókban nincs csapat létrehozva.",
-      "EDIT_TEAM": "Csapat szerkesztése"
+      "EDIT_TEAM": "Csapat szerkesztése",
+      "NONE": "Nincs"
     },
     "CREATE_FLOW": {
       "CREATE": {
@@ -83,7 +86,7 @@
       "SELECT_ALL": "összes kiválasztása",
       "SELECTED_COUNT": "%{selected} a %{total}-ból kiválasztva.",
       "BUTTON_TEXT": "Ügynök Hozzádása",
-      "AGENT_VALIDATION_ERROR": "Select at least one agent."
+      "AGENT_VALIDATION_ERROR": "Kérlek válassz ki legalább egy ügynököt."
     },
     "FINISH": {
       "TITLE": "A csapatod kész!",
@@ -97,7 +100,7 @@
         "ERROR_MESSAGE": "Nem sikerült a csapat törlés. Próbáld újra."
       },
       "CONFIRM": {
-        "TITLE": "Biztosan törölni akarod: %{teamName}",
+        "TITLE": "Are you sure you want to delete the team?",
         "PLACE_HOLDER": "Kérlek gépeld be, hogy {teamName} a megerősítéshez",
         "MESSAGE": "A csapat letörlése a hozzárendelt beszélgetéseket is eltávolítja.",
         "YES": "Törlés ",

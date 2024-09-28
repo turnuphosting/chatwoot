@@ -3,6 +3,8 @@ import { playNewMessageNotificationInWidget } from 'widget/helpers/WidgetAudioNo
 import { ON_AGENT_MESSAGE_RECEIVED } from '../constants/widgetBusEvents';
 import { IFrameHelper } from 'widget/helpers/utils';
 import { shouldTriggerMessageUpdateEvent } from './IframeEventHelper';
+import { CHATWOOT_ON_MESSAGE } from '../constants/sdkEvents';
+import { emitter } from '../../shared/helpers/mitt';
 
 const isMessageInActiveConversation = (getters, message) => {
   const { conversation_id: conversationId } = message;
@@ -56,9 +58,13 @@ class ActionCableConnector extends BaseActionCableConnector {
 
     this.app.$store
       .dispatch('conversation/addOrUpdateMessage', data)
-      .then(() => window.bus.$emit(ON_AGENT_MESSAGE_RECEIVED));
+      .then(() => emitter.emit(ON_AGENT_MESSAGE_RECEIVED));
 
-    IFrameHelper.sendMessage({ event: 'onMessage', data });
+    IFrameHelper.sendMessage({
+      event: 'onEvent',
+      eventIdentifier: CHATWOOT_ON_MESSAGE,
+      data,
+    });
     if (data.sender_type === 'User') {
       playNewMessageNotificationInWidget();
     }
@@ -70,7 +76,11 @@ class ActionCableConnector extends BaseActionCableConnector {
     }
 
     if (shouldTriggerMessageUpdateEvent(data)) {
-      IFrameHelper.sendMessage({ event: 'onMessage', data });
+      IFrameHelper.sendMessage({
+        event: 'onEvent',
+        eventIdentifier: CHATWOOT_ON_MESSAGE,
+        data,
+      });
     }
 
     this.app.$store.dispatch('conversation/addOrUpdateMessage', data);
@@ -84,15 +94,16 @@ class ActionCableConnector extends BaseActionCableConnector {
     this.app.$store.dispatch('agent/updatePresence', data.users);
   };
 
+  // eslint-disable-next-line class-methods-use-this
   onContactMerge = data => {
     const { pubsub_token: pubsubToken } = data;
     ActionCableConnector.refreshConnector(pubsubToken);
   };
 
   onTypingOn = data => {
-    const activeConversationId = this.app.$store.getters[
-      'conversationAttributes/getConversationParams'
-    ].id;
+    const activeConversationId =
+      this.app.$store.getters['conversationAttributes/getConversationParams']
+        .id;
     const isUserTypingOnAnotherConversation =
       data.conversation && data.conversation.id !== activeConversationId;
 

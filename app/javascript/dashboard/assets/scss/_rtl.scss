@@ -1,20 +1,6 @@
 .app-rtl--wrapper {
   direction: rtl;
 
-  .header-section.back-button {
-    direction: initial;
-    margin-left: var(--space-normal);
-    margin-right: var(--space-smaller);
-  }
-
-  // Settings header action button
-  .button--fixed-top {
-    left: $space-small;
-    position: fixed;
-    right: unset;
-    top: $space-small;
-  }
-
   // Woot Tabs
   .tabs-title {
     &:first-child {
@@ -145,35 +131,10 @@
       }
     }
 
-    .search-header--wrap {
-      .search--input {
-        text-align: right;
-      }
-
-      .layout-switch__container {
-        transform: rotate(180deg);
-      }
-    }
-
     // Basic filter dropdown
     .basic-filter {
       left: 0;
       right: unset;
-    }
-
-    // Card label
-    .label-container {
-      .label {
-        margin-left: var(--space-smaller);
-        margin-right: 0;
-      }
-    }
-
-    // Secondary sidebar toggle button
-    .toggle-sidebar {
-      margin-left: 0;
-      margin-right: var(--space-minus-small);
-      transform: rotate(180deg);
     }
 
     // Bulk actions
@@ -213,22 +174,6 @@
   .card.note-wrap {
     .time-stamp {
       unicode-bidi: plaintext;
-    }
-  }
-
-  // Notification panel
-  .notification-wrap {
-    left: 0;
-    right: var(--space-jumbo);
-
-    .action-button {
-      margin-left: var(--space-small);
-      margin-right: 0;
-    }
-
-    .notification-content--wrap {
-      margin-left: 0;
-      margin-right: var(--space-small);
     }
   }
 
@@ -338,10 +283,6 @@
 
   // Other changes
 
-  .account-selector--wrap {
-    direction: initial;
-  }
-
   .colorpicker--chrome {
     direction: initial;
   }
@@ -360,10 +301,5 @@
 
   .contact--form .input-group {
     direction: initial;
-  }
-
-  // scss-lint:disable QualifyingElement
-  .dropdown-menu--header > span.title {
-    text-align: right;
   }
 }

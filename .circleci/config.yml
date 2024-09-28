@@ -7,7 +7,7 @@ defaults: &defaults
   working_directory: ~/build
   docker:
     # specify the version you desire here
-    - image: cimg/ruby:3.2.2-browsers
+    - image: cimg/ruby:3.3.3-browsers
 
     # Specify service dependencies here if necessary
     # CircleCI maintains a library of pre-built images
@@ -15,9 +15,9 @@ defaults: &defaults
     - image: cimg/postgres:15.3
     - image: cimg/redis:6.2.6
   environment:
-      - RAILS_LOG_TO_STDOUT: false
-      - COVERAGE: true
-      - LOG_LEVEL: warn
+    - RAILS_LOG_TO_STDOUT: false
+    - COVERAGE: true
+    - LOG_LEVEL: warn
   parallelism: 4
   resource_class: large
 
@@ -46,7 +46,7 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v16
+            nvm install v20
             echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
             echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
 
@@ -63,7 +63,6 @@ jobs:
           paths:
             - ~/.bundle
           key: chatwoot-bundle-{{ .Environment.CACHE_VERSION }}-v20220524-{{ checksum "Gemfile.lock" }}
-
 
       # Only necessary if app uses webpacker or yarn in some other way
       - restore_cache:
@@ -82,7 +81,7 @@ jobs:
             - ~/.cache/yarn
 
       - run:
-          name:  Download cc-test-reporter
+          name: Download cc-test-reporter
           command: |
             mkdir -p ~/tmp
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ~/tmp/cc-test-reporter
@@ -131,10 +130,7 @@ jobs:
           command: |
             mkdir -p ~/tmp/test-results/frontend_specs
             ~/tmp/cc-test-reporter before-build
-            TESTFILES=$(circleci tests glob **/specs/*.spec.js | circleci tests split --split-by=timings)
-            yarn test:coverage --profile 10 \
-                               --out ~/tmp/test-results/yarn.xml \
-                               -- ${TESTFILES}
+            yarn test:coverage
       - run:
           name: Code Climate Test Coverage
           command: |
@@ -182,7 +178,7 @@ jobs:
       - attach_workspace:
           at: ~/build
       - run:
-          name:  Download cc-test-reporter
+          name: Download cc-test-reporter
           command: |
             mkdir -p ~/tmp
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ~/tmp/cc-test-reporter
@@ -204,4 +200,4 @@ workflows:
       - build
       - upload-coverage:
           requires:
-             - build
+            - build

@@ -34,21 +34,22 @@
         "TITLE": "Labels hinzufügen",
         "PLACEHOLDER": "Labels suchen",
         "NO_RESULT": "Keine Labels gefunden",
-        "CREATE_LABEL": "Create new label"
+        "CREATE_LABEL": "Neues Label erstellen"
       }
     },
     "MERGE_CONTACT": "Kontakte zusammenführen",
     "CONTACT_ACTIONS": "Kontakt-Aktionen",
-    "MUTE_CONTACT": "Unterhaltung stummschalten",
-    "UNMUTE_CONTACT": "Unterhaltung entstummen",
-    "MUTED_SUCCESS": "Diese Unterhaltung ist für 6 Stunden auf stumm schalten",
-    "UNMUTED_SUCCESS": "Diese Unterhaltung ist nicht mehr stumm geschaltet",
+    "MUTE_CONTACT": "Kontakt blockieren",
+    "UNMUTE_CONTACT": "Kontakt entsperren",
+    "MUTED_SUCCESS": "Dieser Kontakt wurde erfolgreich blockiert. Sie werden über keine zukünftigen Konversationen benachrichtigt.",
+    "UNMUTED_SUCCESS": "Dieser Kontakt wurde erfolgreich entsperrt.",
     "SEND_TRANSCRIPT": "Transkript senden",
     "EDIT_LABEL": "Bearbeiten",
     "SIDEBAR_SECTIONS": {
       "CUSTOM_ATTRIBUTES": "Benutzerdefinierte Attribute",
       "CONTACT_LABELS": "Kontakt-Labels",
-      "PREVIOUS_CONVERSATIONS": "Vorherige Konversationen"
+      "PREVIOUS_CONVERSATIONS": "Vorherige Konversationen",
+      "NO_RECORDS_FOUND": "Keine Attribute gefunden"
     }
   },
   "EDIT_CONTACT": {
@@ -71,15 +72,22 @@
       "SUBMIT": "Importieren",
       "CANCEL": "Abbrechen"
     },
-    "SUCCESS_MESSAGE": "Kontakte erfolgreich gespeichert",
+    "SUCCESS_MESSAGE": "Sie werden per E-Mail benachrichtigt, wenn der Import abgeschlossen ist.",
     "ERROR_MESSAGE": "Es ist ein Fehler aufgetreten, bitte versuchen Sie es erneut"
   },
   "EXPORT_CONTACTS": {
-    "BUTTON_LABEL": "Export",
-    "TITLE": "Export Contacts",
-    "DESC": "Export contacts to a CSV file.",
+    "BUTTON_LABEL": "Exportieren",
+    "TITLE": "Kontakte exportieren",
+    "DESC": "Kontakte als CSV exportieren.",
     "SUCCESS_MESSAGE": "Export is in progress, You will be notified via email when export file is ready to dowanlod.",
-    "ERROR_MESSAGE": "Es ist ein Fehler aufgetreten, bitte versuchen Sie es erneut"
+    "ERROR_MESSAGE": "Es ist ein Fehler aufgetreten, bitte versuchen Sie es erneut",
+    "CONFIRM": {
+      "TITLE": "Kontakte exportieren",
+      "MESSAGE": "Sind Sie sicher, dass Sie alle Kontakte exportieren möchten?",
+      "FILTERED_MESSAGE": "Sind Sie sicher, dass Sie alle gefilterten Kontakte exportieren möchten?",
+      "YES": "Ja, exportieren",
+      "NO": "Nein, abbrechen"
+    }
   },
   "DELETE_NOTE": {
     "CONFIRM": {
@@ -128,9 +136,9 @@
       "PHONE_NUMBER": {
         "PLACEHOLDER": "Geben Sie die Telefonnummer des Kontakts ein",
         "LABEL": "Telefonnummer",
-        "HELP": "Telefonnummer sollte im E.164-Format sein, z. B.: +1415555555 [+][Landesvorwahl][Landesvorwahl][Ortsvorwahl]",
+        "HELP": "Bitte geben Sie die Telefonnummer im E.164-Format ein, z. B.: +49301234567 [+][Landesvorwahl][Ortsvorwahl][Rufnummer].\nSie können die Landesvorwahl aus der Liste wählen.",
         "ERROR": "Telefonnummer muss leer sein oder im E.164-Format",
-        "DIAL_CODE_ERROR": "Bitte wählen Sie einen Wählcode aus der Liste",
+        "DIAL_CODE_ERROR": "Bitte wählen Sie die Landesvorwahl aus der Liste",
         "DUPLICATE": "Diese Telefonnummer wird für einen anderen Kontakt verwendet."
       },
       "LOCATION": {
@@ -142,8 +150,8 @@
         "LABEL": "Firmenname"
       },
       "COUNTRY": {
-        "PLACEHOLDER": "Geben Sie den Landesnamen ein",
-        "LABEL": "Ländername",
+        "PLACEHOLDER": "Geben Sie den Namen des Landes ein",
+        "LABEL": "Landesname",
         "SELECT_PLACEHOLDER": "Auswählen",
         "REMOVE": "Entfernen",
         "SELECT_COUNTRY": "Land auswählen"
@@ -190,7 +198,7 @@
         "LABEL": "An"
       },
       "INBOX": {
-        "LABEL": "Posteingang",
+        "LABEL": "Über Posteingang",
         "PLACEHOLDER": "Posteingang auswählen",
         "ERROR": "Posteingang auswählen"
       },
@@ -203,6 +211,10 @@
         "LABEL": "Nachricht",
         "PLACEHOLDER": "Schreiben Sie Ihre Nachricht hier",
         "ERROR": "Nachricht darf nicht leer sein"
+      },
+      "ATTACHMENTS": {
+        "SELECT": "Dateien auswählen",
+        "HELP_TEXT": "Ziehe Dateien hierher oder wähle Dateien zum Anhängen aus"
       },
       "SUBMIT": "Nachricht senden",
       "CANCEL": "Abbrechen",
@@ -219,7 +231,7 @@
     "FILTER_CONTACTS": "Filter",
     "FILTER_CONTACTS_SAVE": "Filter speichern",
     "FILTER_CONTACTS_DELETE": "Filter löschen",
-    "FILTER_CONTACTS_EDIT": "Edit segment",
+    "FILTER_CONTACTS_EDIT": "Segment bearbeiten",
     "LIST": {
       "LOADING_MESSAGE": "Kontakte werden geladen...",
       "404": "Keine Kontakte entsprechen Ihrer Suche 🔍",
@@ -286,6 +298,8 @@
     "BUTTON": "Eigenes Attribut hinzufügen",
     "NOT_AVAILABLE": "Für diesen Kontakt sind keine benutzerdefinierten Attribute verfügbar.",
     "COPY_SUCCESSFUL": "Erfolgreich in die Zwischenablage kopiert",
+    "SHOW_MORE": "Alle Attribute anzeigen",
+    "SHOW_LESS": "Weniger Attribute anzeigen",
     "ACTIONS": {
       "COPY": "Attribut kopieren",
       "DELETE": "Attribut löschen",
@@ -335,7 +349,8 @@
     },
     "VALIDATIONS": {
       "REQUIRED": "Gültiger Wert ist erforderlich",
-      "INVALID_URL": "Ungültige URL"
+      "INVALID_URL": "Ungültige URL",
+      "INVALID_INPUT": "Ungültige Eingabe"
     }
   },
   "MERGE_CONTACTS": {
@@ -343,17 +358,17 @@
     "DESCRIPTION": "Kontakte zusammenführen, um zwei Profile zu einem zu kombinieren, einschließlich aller Attribute und Gespräche. Im Falle eines Konflikts haben die Attribute des Hauptkontakts Vorrang.",
     "PRIMARY": {
       "TITLE": "Hauptkontakt",
-      "HELP_LABEL": "Zu erhalten"
+      "HELP_LABEL": "Zu löschen"
     },
-    "CHILD": {
+    "PARENT": {
       "TITLE": "Kontakt zum Zusammenführen",
       "PLACEHOLDER": "Nach Kontakt suchen",
-      "HELP_LABEL": "Zu löschen"
+      "HELP_LABEL": "Zu erhalten"
     },
     "SUMMARY": {
       "TITLE": "Zusammenfassung",
-      "DELETE_WARNING": "Der Kontakt von <strong>%{childContactName}</strong> wird gelöscht.",
-      "ATTRIBUTE_WARNING": "Details von Kontakt <strong>%{childContactName}</strong> wird zu <strong>%{primaryContactName}</strong> kopiert."
+      "DELETE_WARNING": "Der Kontakt von <strong>%{primaryContactName}</strong> wird gelöscht.",
+      "ATTRIBUTE_WARNING": "Details von Kontakt <strong>%{primaryContactName}</strong> wird zu <strong>%{parentContactName}</strong> kopiert."
     },
     "SEARCH": {
       "ERROR": "ERROR_MESSAGE"
@@ -366,6 +381,9 @@
       },
       "SUCCESS_MESSAGE": "Kontakt erfolgreich zusammengeführt",
       "ERROR_MESSAGE": "Kontakte konnten nicht zusammengeführt werden, bitte erneut versuchen!"
+    },
+    "DROPDOWN_ITEM": {
+      "ID": "(ID: {identifier})"
     }
   }
 }

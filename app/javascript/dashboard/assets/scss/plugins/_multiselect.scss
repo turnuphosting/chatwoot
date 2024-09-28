@@ -97,6 +97,10 @@
 
   .multiselect__tags {
     @apply bg-white dark:bg-slate-900 border border-solid border-slate-200 dark:border-slate-600 m-0 min-h-[2.875rem] pt-0;
+
+    input {
+      @apply border-0 border-none;
+    }
   }
 
   .multiselect__tags-wrap {
@@ -149,15 +153,33 @@
 }
 
 .multiselect-wrap--small {
-  .multiselect__tags,
-  .multiselect__input {
-    @apply items-center flex;
+  // To be removed one SLA reports date picker is created
+  &.tiny {
+    .multiselect.no-margin {
+      @apply min-h-[32px];
+    }
+
+    .multiselect__select {
+      @apply min-h-[32px] h-8;
+
+      &::before {
+        @apply top-[60%];
+      }
+    }
+
+    .multiselect__tags {
+      @apply min-h-[32px] max-h-[32px];
+
+      .multiselect__single {
+        @apply pt-1 pb-1;
+      }
+    }
   }
 
   .multiselect__tags,
   .multiselect__input,
   .multiselect {
-    @apply bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-[5px] text-sm h-10 min-h-[2.5rem];
+    @apply bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-[5px] text-sm  min-h-[2.5rem];
   }
 
   .multiselect__input {
@@ -165,11 +187,15 @@
   }
 
   .multiselect__single {
-    @apply items-center flex m-0 text-sm max-h-[2.375rem] text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900 py-1 px-0.5;
+    @apply items-center flex m-0 text-sm max-h-[2.375rem] text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900 py-3 px-0.5;
   }
 
   .multiselect__placeholder {
-    @apply m-0 py-1 px-0.5;
+    @apply m-0 py-2 px-0.5;
+  }
+
+  .multiselect__tag {
+    @apply py-[6px] my-[1px];
   }
 
   .multiselect__select {
@@ -179,10 +205,6 @@
   .multiselect--disabled .multiselect__current,
   .multiselect--disabled .multiselect__select {
     @apply bg-transparent;
-  }
-
-  .multiselect__tags-wrap {
-    @apply flex-shrink-0;
   }
 }
 

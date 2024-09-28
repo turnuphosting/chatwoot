@@ -1,15 +1,5 @@
-<template>
-  <mention-box :items="items" @mention-select="handleVariableClick">
-    <template slot-scope="{ item }">
-      <span class="text-capitalize variable--list-label">
-        {{ item.description }}
-      </span>
-      ({{ item.label }})
-    </template>
-  </mention-box>
-</template>
-
 <script>
+import { mapGetters } from 'vuex';
 import { MESSAGE_VARIABLES } from 'shared/constants/messages';
 import MentionBox from '../mentions/MentionBox.vue';
 
@@ -22,7 +12,16 @@ export default {
     },
   },
   computed: {
+    ...mapGetters({
+      customAttributes: 'attributes/getAttributes',
+    }),
     items() {
+      return [
+        ...this.standardAttributeVariables,
+        ...this.customAttributeVariables,
+      ];
+    },
+    standardAttributeVariables() {
       return MESSAGE_VARIABLES.filter(variable => {
         return (
           variable.label.includes(this.searchKey) ||
@@ -34,6 +33,20 @@ export default {
         description: variable.label,
       }));
     },
+    customAttributeVariables() {
+      return this.customAttributes.map(attribute => {
+        const attributePrefix =
+          attribute.attribute_model === 'conversation_attribute'
+            ? 'conversation'
+            : 'contact';
+
+        return {
+          label: `${attributePrefix}.custom_attribute.${attribute.attribute_key}`,
+          key: `${attributePrefix}.custom_attribute.${attribute.attribute_key}`,
+          description: attribute.attribute_description,
+        };
+      });
+    },
   },
   methods: {
     handleVariableClick(item = {}) {
@@ -42,6 +55,17 @@ export default {
   },
 };
 </script>
+
+<!-- eslint-disable-next-line vue/no-root-v-if -->
+<template>
+  <MentionBox
+    v-if="items.length"
+    type="variable"
+    :items="items"
+    @mentionSelect="handleVariableClick"
+  />
+</template>
+
 <style scoped>
 .variable--list-label {
   font-weight: var(--font-weight-bold);

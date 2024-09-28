@@ -1,9 +1,3 @@
-<template>
-  <div class="h-full w-full antialiased" :class="theme">
-    <router-view />
-    <snackbar-container />
-  </div>
-</template>
 <script>
 import SnackbarContainer from './components/SnackBar/Container.vue';
 
@@ -15,6 +9,7 @@ export default {
   mounted() {
     this.setColorTheme();
     this.listenToThemeChanges();
+    this.setLocale(window.chatwootConfig.selectedLocale);
   },
   methods: {
     setColorTheme() {
@@ -35,9 +30,20 @@ export default {
         }
       };
     },
+    setLocale(locale) {
+      this.$root.$i18n.locale = locale;
+    },
   },
 };
 </script>
+
+<template>
+  <div class="h-full w-full antialiased" :class="theme">
+    <router-view />
+    <SnackbarContainer />
+  </div>
+</template>
+
 <style lang="scss">
 @tailwind base;
 @tailwind components;
@@ -51,8 +57,17 @@ export default {
 
 html,
 body {
-  font-family: 'PlusJakarta', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  font-family:
+    'PlusJakarta',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen-Sans,
+    Ubuntu,
+    Cantarell,
+    'Helvetica Neue',
+    sans-serif;
   @apply h-full w-full;
 
   input,

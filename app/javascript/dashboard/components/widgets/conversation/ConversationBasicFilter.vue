@@ -1,3 +1,68 @@
+<script>
+import wootConstants from 'dashboard/constants/globals';
+import { mapGetters } from 'vuex';
+import FilterItem from './FilterItem.vue';
+import { useUISettings } from 'dashboard/composables/useUISettings';
+
+export default {
+  components: {
+    FilterItem,
+  },
+  setup() {
+    const { updateUISettings } = useUISettings();
+
+    return {
+      updateUISettings,
+    };
+  },
+  data() {
+    return {
+      showActionsDropdown: false,
+      chatStatusItems: this.$t('CHAT_LIST.CHAT_STATUS_FILTER_ITEMS'),
+      chatSortItems: this.$t('CHAT_LIST.SORT_ORDER_ITEMS'),
+    };
+  },
+  computed: {
+    ...mapGetters({
+      chatStatusFilter: 'getChatStatusFilter',
+      chatSortFilter: 'getChatSortFilter',
+    }),
+    chatStatus() {
+      return this.chatStatusFilter || wootConstants.STATUS_TYPE.OPEN;
+    },
+    sortFilter() {
+      return (
+        this.chatSortFilter || wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC
+      );
+    },
+  },
+  methods: {
+    onTabChange(value) {
+      this.$emit('changeFilter', value);
+      this.closeDropdown();
+    },
+    toggleDropdown() {
+      this.showActionsDropdown = !this.showActionsDropdown;
+    },
+    closeDropdown() {
+      this.showActionsDropdown = false;
+    },
+    onChangeFilter(value, type) {
+      this.$emit('changeFilter', value, type);
+      this.saveSelectedFilter(type, value);
+    },
+    saveSelectedFilter(type, value) {
+      this.updateUISettings({
+        conversations_filter_by: {
+          status: type === 'status' ? value : this.chatStatus,
+          order_by: type === 'sort' ? value : this.sortFilter,
+        },
+      });
+    },
+  },
+};
+</script>
+
 <template>
   <div class="relative flex">
     <woot-button
@@ -12,13 +77,13 @@
     <div
       v-if="showActionsDropdown"
       v-on-clickaway="closeDropdown"
-      class="dropdown-pane dropdown-pane--open mt-1 right-0 basic-filter"
+      class="right-0 mt-1 dropdown-pane dropdown-pane--open basic-filter"
     >
-      <div class="items-center flex justify-between last:mt-4">
-        <span class="text-slate-800 dark:text-slate-100 text-xs font-medium">{{
-          this.$t('CHAT_LIST.CHAT_SORT.STATUS')
+      <div class="flex items-center justify-between last:mt-4">
+        <span class="text-xs font-medium text-slate-800 dark:text-slate-100">{{
+          $t('CHAT_LIST.CHAT_SORT.STATUS')
         }}</span>
-        <filter-item
+        <FilterItem
           type="status"
           :selected-value="chatStatus"
           :items="chatStatusItems"
@@ -26,15 +91,15 @@
           @onChangeFilter="onChangeFilter"
         />
       </div>
-      <div class="items-center flex justify-between last:mt-4">
-        <span class="text-slate-800 dark:text-slate-100 text-xs font-medium">{{
-          this.$t('CHAT_LIST.CHAT_SORT.ORDER_BY')
+      <div class="flex items-center justify-between last:mt-4">
+        <span class="text-xs font-medium text-slate-800 dark:text-slate-100">{{
+          $t('CHAT_LIST.CHAT_SORT.ORDER_BY')
         }}</span>
-        <filter-item
+        <FilterItem
           type="sort"
-          :selected-value="chatSortFilter"
+          :selected-value="sortFilter"
           :items="chatSortItems"
-          path-prefix="CHAT_LIST.CHAT_SORT_FILTER_ITEMS"
+          path-prefix="CHAT_LIST.SORT_ORDER_ITEMS"
           @onChangeFilter="onChangeFilter"
         />
       </div>
@@ -42,53 +107,6 @@
   </div>
 </template>
 
-<script>
-import wootConstants from 'dashboard/constants/globals';
-import { mapGetters } from 'vuex';
-import { mixin as clickaway } from 'vue-clickaway';
-import FilterItem from './FilterItem';
-
-export default {
-  components: {
-    FilterItem,
-  },
-  mixins: [clickaway],
-  data() {
-    return {
-      showActionsDropdown: false,
-      chatStatusItems: this.$t('CHAT_LIST.CHAT_STATUS_FILTER_ITEMS'),
-      chatSortItems: this.$t('CHAT_LIST.CHAT_SORT_FILTER_ITEMS'),
-    };
-  },
-  computed: {
-    ...mapGetters({
-      chatStatusFilter: 'getChatStatusFilter',
-      chatSortFilter: 'getChatSortFilter',
-    }),
-    chatStatus() {
-      return this.chatStatusFilter || wootConstants.STATUS_TYPE.OPEN;
-    },
-    sortFilter() {
-      return this.chatSortFilter || wootConstants.SORT_BY_TYPE.LATEST;
-    },
-  },
-  methods: {
-    onTabChange(value) {
-      this.$emit('changeFilter', value);
-      this.closeDropdown();
-    },
-    toggleDropdown() {
-      this.showActionsDropdown = !this.showActionsDropdown;
-    },
-    closeDropdown() {
-      this.showActionsDropdown = false;
-    },
-    onChangeFilter(type, value) {
-      this.$emit('changeFilter', type, value);
-    },
-  },
-};
-</script>
 <style lang="scss" scoped>
 .basic-filter {
   @apply w-52 p-4 top-6;

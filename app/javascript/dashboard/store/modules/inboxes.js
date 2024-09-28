@@ -76,10 +76,8 @@ export const getters = {
   },
   getNewConversationInboxes($state) {
     return $state.records.filter(inbox => {
-      const {
-        channel_type: channelType,
-        phone_number: phoneNumber = '',
-      } = inbox;
+      const { channel_type: channelType, phone_number: phoneNumber = '' } =
+        inbox;
 
       const isEmailChannel = channelType === INBOX_TYPES.EMAIL;
       const isSmsChannel =
@@ -185,7 +183,7 @@ export const actions = {
       return response.data;
     } catch (error) {
       commit(types.default.SET_INBOXES_UI_FLAG, { isCreating: false });
-      throw new Error(error);
+      throw error;
     }
   },
   createFBChannel: async ({ commit }, params) => {

@@ -1,33 +1,6 @@
-<template>
-  <div class="footer-wrap">
-    <custom-button
-      v-if="config.isDefaultScreen"
-      class="start-conversation"
-      :style="{ background: config.color }"
-    >
-      {{
-        $t('INBOX_MGMT.WIDGET_BUILDER.FOOTER.START_CONVERSATION_BUTTON_TEXT')
-      }}
-    </custom-button>
-    <div v-else class="chat-message-input is-focused">
-      <resizable-text-area
-        id="chat-input"
-        :placeholder="
-          $t('INBOX_MGMT.WIDGET_BUILDER.FOOTER.CHAT_INPUT_PLACEHOLDER')
-        "
-        class="user-message-input is-focused"
-      />
-      <div class="button-wrap">
-        <fluent-icon icon="emoji" />
-        <fluent-icon class="icon-send" icon="send" />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
-import CustomButton from 'dashboard/components/buttons/Button';
-import ResizableTextArea from 'shared/components/ResizableTextArea';
+import CustomButton from 'dashboard/components/buttons/Button.vue';
+import ResizableTextArea from 'shared/components/ResizableTextArea.vue';
 export default {
   name: 'WidgetFooter',
   components: {
@@ -42,6 +15,34 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="footer-wrap">
+    <CustomButton
+      v-if="config.isDefaultScreen"
+      class="start-conversation"
+      :style="{ background: config.color }"
+    >
+      {{
+        $t('INBOX_MGMT.WIDGET_BUILDER.FOOTER.START_CONVERSATION_BUTTON_TEXT')
+      }}
+    </CustomButton>
+    <div v-else class="chat-message-input is-focused">
+      <ResizableTextArea
+        id="chat-input"
+        :rows="1"
+        :placeholder="
+          $t('INBOX_MGMT.WIDGET_BUILDER.FOOTER.CHAT_INPUT_PLACEHOLDER')
+        "
+        class="user-message-input is-focused"
+      />
+      <div class="button-wrap">
+        <fluent-icon icon="emoji" />
+        <fluent-icon class="icon-send" icon="send" />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 @import '~dashboard/assets/scss/variables.scss';
@@ -70,7 +71,9 @@ export default {
     background: white;
 
     &.is-focused {
-      box-shadow: 0 0 0 1px var(--color-woot), 0 0 2px 2px var(--w-100);
+      box-shadow:
+        0 0 0 1px var(--color-woot),
+        0 0 2px 2px var(--w-100);
     }
   }
 

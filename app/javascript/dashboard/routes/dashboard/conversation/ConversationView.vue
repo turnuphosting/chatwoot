@@ -1,46 +1,28 @@
-<template>
-  <section class="conversation-page bg-white dark:bg-slate-900">
-    <chat-list
-      :show-conversation-list="showConversationList"
-      :conversation-inbox="inboxId"
-      :label="label"
-      :team-id="teamId"
-      :conversation-type="conversationType"
-      :folders-id="foldersId"
-      :is-on-expanded-layout="isOnExpandedLayout"
-      @conversation-load="onConversationLoad"
-    >
-      <pop-over-search
-        :is-on-expanded-layout="isOnExpandedLayout"
-        @toggle-conversation-layout="toggleConversationLayout"
-      />
-    </chat-list>
-    <conversation-box
-      v-if="showMessageView"
-      :inbox-id="inboxId"
-      :is-contact-panel-open="isContactPanelOpen"
-      :is-on-expanded-layout="isOnExpandedLayout"
-      @contact-panel-toggle="onToggleContactPanel"
-    />
-  </section>
-</template>
-
 <script>
 import { mapGetters } from 'vuex';
-import ChatList from '../../../components/ChatList';
-import ConversationBox from '../../../components/widgets/conversation/ConversationBox';
-import PopOverSearch from './search/PopOverSearch';
-import uiSettingsMixin from 'dashboard/mixins/uiSettings';
-import { BUS_EVENTS } from 'shared/constants/busEvents';
+import { useUISettings } from 'dashboard/composables/useUISettings';
+import ChatList from '../../../components/ChatList.vue';
+import ConversationBox from '../../../components/widgets/conversation/ConversationBox.vue';
+import PopOverSearch from './search/PopOverSearch.vue';
 import wootConstants from 'dashboard/constants/globals';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
+import CmdBarConversationSnooze from 'dashboard/routes/dashboard/commands/CmdBarConversationSnooze.vue';
 
 export default {
   components: {
     ChatList,
     ConversationBox,
     PopOverSearch,
+    CmdBarConversationSnooze,
   },
-  mixins: [uiSettingsMixin],
+  beforeRouteLeave(to, from, next) {
+    // Clear selected state if navigating away from a conversation to a route without a conversationId to prevent stale data issues
+    // and resolves timing issues during navigation with conversation view and other screens
+    if (this.conversationId) {
+      this.$store.dispatch('clearSelectedState');
+    }
+    next(); // Continue with navigation
+  },
   props: {
     inboxId: {
       type: [String, Number],
@@ -67,6 +49,14 @@ export default {
       default: 0,
     },
   },
+  setup() {
+    const { uiSettings, updateUISettings } = useUISettings();
+
+    return {
+      uiSettings,
+      updateUISettings,
+    };
+  },
   data() {
     return {
       showSearchModal: false,
@@ -87,16 +77,14 @@ export default {
       const {
         LAYOUT_TYPES: { CONDENSED },
       } = wootConstants;
-      const {
-        conversation_display_type: conversationDisplayType = CONDENSED,
-      } = this.uiSettings;
+      const { conversation_display_type: conversationDisplayType = CONDENSED } =
+        this.uiSettings;
       return conversationDisplayType !== CONDENSED;
     },
     isContactPanelOpen() {
       if (this.currentChat.id) {
-        const {
-          is_contact_sidebar_open: isContactSidebarOpen,
-        } = this.uiSettings;
+        const { is_contact_sidebar_open: isContactSidebarOpen } =
+          this.uiSettings;
         return isContactSidebarOpen;
       }
       return false;
@@ -107,6 +95,17 @@ export default {
       this.fetchConversationIfUnavailable();
     },
   },
+
+  created() {
+    // Clear selected state early if no conversation is selected
+    // This prevents child components from accessing stale data
+    // and resolves timing issues during navigation
+    // with conversation view and other screens
+    if (!this.conversationId) {
+      this.$store.dispatch('clearSelectedState');
+    }
+  },
+
   mounted() {
     this.$store.dispatch('agents/get');
     this.initialize();
@@ -127,7 +126,8 @@ export default {
     toggleConversationLayout() {
       const { LAYOUT_TYPES } = wootConstants;
       const {
-        conversation_display_type: conversationDisplayType = LAYOUT_TYPES.CONDENSED,
+        conversation_display_type:
+          conversationDisplayType = LAYOUT_TYPES.CONDENSED,
       } = this.uiSettings;
       const newViewType =
         conversationDisplayType === LAYOUT_TYPES.CONDENSED
@@ -170,7 +170,7 @@ export default {
             after: messageId,
           })
           .then(() => {
-            bus.$emit(BUS_EVENTS.SCROLL_TO_MESSAGE, { messageId });
+            this.$emitter.emit(BUS_EVENTS.SCROLL_TO_MESSAGE, { messageId });
           });
       } else {
         this.$store.dispatch('clearSelectedState');
@@ -190,6 +190,35 @@ export default {
   },
 };
 </script>
+
+<template>
+  <section class="bg-white conversation-page dark:bg-slate-900">
+    <ChatList
+      :show-conversation-list="showConversationList"
+      :conversation-inbox="inboxId"
+      :label="label"
+      :team-id="teamId"
+      :conversation-type="conversationType"
+      :folders-id="foldersId"
+      :is-on-expanded-layout="isOnExpandedLayout"
+      @conversationLoad="onConversationLoad"
+    >
+      <PopOverSearch
+        :is-on-expanded-layout="isOnExpandedLayout"
+        @toggleConversationLayout="toggleConversationLayout"
+      />
+    </ChatList>
+    <ConversationBox
+      v-if="showMessageView"
+      :inbox-id="inboxId"
+      :is-contact-panel-open="isContactPanelOpen"
+      :is-on-expanded-layout="isOnExpandedLayout"
+      @contactPanelToggle="onToggleContactPanel"
+    />
+    <CmdBarConversationSnooze />
+  </section>
+</template>
+
 <style lang="scss" scoped>
 .conversation-page {
   display: flex;

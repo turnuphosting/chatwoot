@@ -1,6 +1,27 @@
+<script>
+import PageHeader from '../../SettingsSubPageHeader.vue';
+import BandwidthSms from './BandwidthSms.vue';
+import Twilio from './Twilio.vue';
+
+export default {
+  components: {
+    PageHeader,
+    Twilio,
+    BandwidthSms,
+  },
+  data() {
+    return {
+      provider: 'twilio',
+    };
+  },
+};
+</script>
+
 <template>
-  <div class="wizard-body w-[75%] flex-shrink-0 flex-grow-0 max-w-[75%]">
-    <page-header
+  <div
+    class="border border-slate-25 dark:border-slate-800/60 bg-white dark:bg-slate-900 h-full p-6 w-full max-w-full md:w-3/4 md:max-w-[75%] flex-shrink-0 flex-grow-0"
+  >
+    <PageHeader
       :header-title="$t('INBOX_MGMT.ADD.SMS.TITLE')"
       :header-content="$t('INBOX_MGMT.ADD.SMS.DESC')"
     />
@@ -17,26 +38,7 @@
         </select>
       </label>
     </div>
-    <twilio v-if="provider === 'twilio'" type="sms" />
-    <bandwidth-sms v-else />
+    <Twilio v-if="provider === 'twilio'" type="sms" />
+    <BandwidthSms v-else />
   </div>
 </template>
-
-<script>
-import PageHeader from '../../SettingsSubPageHeader';
-import BandwidthSms from './BandwidthSms.vue';
-import Twilio from './Twilio';
-
-export default {
-  components: {
-    PageHeader,
-    Twilio,
-    BandwidthSms,
-  },
-  data() {
-    return {
-      provider: 'twilio',
-    };
-  },
-};
-</script>

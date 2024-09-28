@@ -50,7 +50,7 @@ RSpec.describe 'Enterprise Inboxes API', type: :request do
     let(:administrator) { create(:user, account: account, role: :administrator) }
 
     before do
-      skip('Skipping since vector is not enabled in this environment') unless Features::ResponseBotService.new.vector_extension_enabled?
+      skip_unless_response_bot_enabled_test_environment
     end
 
     context 'when it is an unauthenticated user' do
@@ -71,7 +71,9 @@ RSpec.describe 'Enterprise Inboxes API', type: :request do
       end
 
       it 'returns all response_sources belonging to the inbox to administrators' do
-        response_source = create(:response_source, account: account, inbox: inbox)
+        response_source = create(:response_source, account: account)
+        inbox.response_sources << response_source
+        inbox.save!
         get "/api/v1/accounts/#{account.id}/inboxes/#{inbox.id}/response_sources",
             headers: administrator.create_new_auth_token,
             as: :json

@@ -1,90 +1,66 @@
-<template>
-  <div
-    class="z-50 rounded-md border-t border-slate-50 w-full flex flex-1 flex-col justify-end"
-    :class="{ 'pb-2': showArticles }"
-  >
-    <div v-if="false" class="px-4 py-2 w-full">
-      <div class="p-4 rounded-md bg-white dark:bg-slate-700 shadow w-full">
-        <article-hero
-          v-if="
-            !articleUiFlags.isFetching &&
-              !articleUiFlags.isError &&
-              popularArticles.length
-          "
-          :articles="popularArticles"
-          @view="openArticleInArticleViewer"
-          @view-all="viewAllArticles"
-        />
-        <div
-          v-if="articleUiFlags.isFetching"
-          class="flex flex-col items-center justify-center py-8"
-        >
-          <div class="inline-block p-4 rounded-lg bg-slate-200">
-            <spinner size="small" />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="px-4 pt-2 w-full sticky bottom-4">
-      <team-availability
-        :available-agents="availableAgents"
-        :has-conversation="!!conversationSize"
-        @start-conversation="startConversation"
-      />
-    </div>
-  </div>
-</template>
-
 <script>
-import TeamAvailability from 'widget/components/TeamAvailability';
-import ArticleHero from 'widget/components/ArticleHero';
-import Spinner from 'shared/components/Spinner.vue';
+import TeamAvailability from 'widget/components/TeamAvailability.vue';
+import ArticleHero from 'widget/components/ArticleHero.vue';
+import ArticleCardSkeletonLoader from 'widget/components/ArticleCardSkeletonLoader.vue';
 
 import { mapGetters } from 'vuex';
+import { useDarkMode } from 'widget/composables/useDarkMode';
 import routerMixin from 'widget/mixins/routerMixin';
 import configMixin from 'widget/mixins/configMixin';
 
 export default {
   name: 'Home',
   components: {
-    Spinner,
     ArticleHero,
     TeamAvailability,
+    ArticleCardSkeletonLoader,
   },
   mixins: [configMixin, routerMixin],
-  props: {
-    hasFetched: {
-      type: Boolean,
-      default: false,
-    },
-    isCampaignViewClicked: {
-      type: Boolean,
-      default: false,
-    },
+  setup() {
+    const { prefersDarkMode } = useDarkMode();
+    return { prefersDarkMode };
   },
   computed: {
     ...mapGetters({
       availableAgents: 'agent/availableAgents',
-      activeCampaign: 'campaign/getActiveCampaign',
       conversationSize: 'conversation/getConversationSize',
+      unreadMessageCount: 'conversation/getUnreadMessageCount',
       popularArticles: 'article/popularArticles',
       articleUiFlags: 'article/uiFlags',
     }),
+    widgetLocale() {
+      return this.$i18n.locale || 'en';
+    },
     portal() {
       return window.chatwootWebChannel.portal;
     },
     showArticles() {
       return (
         this.portal &&
-        (this.articleUiFlags.isFetching || this.popularArticles.length)
+        !this.articleUiFlags.isFetching &&
+        this.popularArticles.length
       );
+    },
+    defaultLocale() {
+      const widgetLocale = this.widgetLocale;
+      const { allowed_locales: allowedLocales, default_locale: defaultLocale } =
+        this.portal.config;
+
+      // IMPORTANT: Variation strict locale matching, Follow iso_639_1_code
+      // If the exact match of a locale is available in the list of portal locales, return it
+      // Else return the default locale. Eg: `es` will not work if `es_ES` is available in the list
+      if (allowedLocales.includes(widgetLocale)) {
+        return widgetLocale;
+      }
+      return defaultLocale;
     },
   },
   mounted() {
     if (this.portal && this.popularArticles.length === 0) {
+      const locale = this.defaultLocale;
       this.$store.dispatch('article/fetch', {
         slug: this.portal.slug,
-        locale: 'en',
+        locale,
       });
     }
   },
@@ -96,18 +72,58 @@ export default {
       return this.replaceRoute('messages');
     },
     openArticleInArticleViewer(link) {
+      let linkToOpen = `${link}?show_plain_layout=true`;
+      const isDark = this.prefersDarkMode;
+      if (isDark) {
+        linkToOpen = `${linkToOpen}&theme=dark`;
+      }
       this.$router.push({
         name: 'article-viewer',
-        params: { link: `${link}?show_plain_layout=true` },
+        params: { link: linkToOpen },
       });
     },
     viewAllArticles() {
+      const locale = this.defaultLocale;
       const {
         portal: { slug },
-        locale = 'en',
       } = window.chatwootWebChannel;
       this.openArticleInArticleViewer(`/hc/${slug}/${locale}`);
     },
   },
 };
 </script>
+
+<template>
+  <div
+    class="z-50 flex flex-col flex-1 w-full rounded-md"
+    :class="{ 'pb-2': showArticles, 'justify-end': !showArticles }"
+  >
+    <div class="w-full px-4 pt-4">
+      <TeamAvailability
+        :available-agents="availableAgents"
+        :has-conversation="!!conversationSize"
+        :unread-count="unreadMessageCount"
+        @startConversation="startConversation"
+      />
+    </div>
+    <div v-if="showArticles" class="w-full px-4 py-2">
+      <div class="w-full p-4 bg-white rounded-md shadow-sm dark:bg-slate-700">
+        <ArticleHero
+          v-if="
+            !articleUiFlags.isFetching &&
+            !articleUiFlags.isError &&
+            popularArticles.length
+          "
+          :articles="popularArticles"
+          @view="openArticleInArticleViewer"
+          @viewAll="viewAllArticles"
+        />
+      </div>
+    </div>
+    <div v-if="articleUiFlags.isFetching" class="w-full px-4 py-2">
+      <div class="w-full p-4 bg-white rounded-md shadow-sm dark:bg-slate-700">
+        <ArticleCardSkeletonLoader />
+      </div>
+    </div>
+  </div>
+</template>

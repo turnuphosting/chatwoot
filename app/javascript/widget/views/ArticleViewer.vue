@@ -1,15 +1,8 @@
-<template>
-  <div class="bg-white h-full">
-    <iframe-loader :url="link" />
-  </div>
-</template>
-
 <script>
-import { IFrameHelper } from 'widget/helpers/utils';
-import IframeLoader from 'shared/components/IframeLoader';
+import IframeLoader from 'shared/components/IframeLoader.vue';
 
 export default {
-  name: 'Campaigns',
+  name: 'ArticleViewer',
   components: {
     IframeLoader,
   },
@@ -19,16 +12,11 @@ export default {
       default: '',
     },
   },
-  methods: {
-    closeFullView() {
-      if (IFrameHelper.isIFrame()) {
-        IFrameHelper.sendMessage({
-          event: 'setCampaignReadOn',
-        });
-        IFrameHelper.sendMessage({ event: 'toggleBubble' });
-        bus.$emit('snooze-campaigns');
-      }
-    },
-  },
 };
 </script>
+
+<template>
+  <div class="bg-white h-full">
+    <IframeLoader :url="link" />
+  </div>
+</template>
