@@ -10,7 +10,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['click']);
+const emit = defineEmits(['selectEmoji']);
 
 const allEmojis = shallowRef([]);
 
@@ -34,7 +34,7 @@ function loadEmojis() {
 }
 
 function handleMentionClick(item = {}) {
-  emit('click', item.emoji);
+  emit('selectEmoji', item.emoji);
 }
 
 onMounted(() => {
@@ -48,17 +48,17 @@ onMounted(() => {
     v-if="items.length"
     type="emoji"
     :items="items"
-    @mentionSelect="handleMentionClick"
+    @mention-select="handleMentionClick"
   >
     <template #default="{ item, selected }">
       <span
-        class="max-w-full inline-flex items-center gap-0.5 min-w-0 mb-0 text-sm font-medium text-slate-900 dark:text-slate-100 group-hover:text-woot-500 dark:group-hover:text-woot-500 truncate"
+        class="max-w-full inline-flex items-center gap-0.5 min-w-0 mb-0 text-sm font-medium text-n-slate-12 group-hover:text-n-brand truncate"
       >
         {{ item.emoji }}
         <p
           class="relative mb-0 truncate bottom-px"
           :class="{
-            'text-woot-500 dark:text-woot-500': selected,
+            'text-n-brand': selected,
             'font-normal': !selected,
           }"
         >

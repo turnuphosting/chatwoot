@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} שיחות נבחרו",
+    "CONVERSATIONS_SELECTED": "{conversationCount} שיחות נבחרו",
     "AGENT_SELECT_LABEL": "בחר נציג",
-    "ASSIGN_CONFIRMATION_LABEL": "האם אתה בטוח שברצונך לשייך %{conversationCount} %{conversationLabel} ל-",
-    "UNASSIGN_CONFIRMATION_LABEL": "האם אתה בטוח שברצונך לבטל שיוך %{conversationCount} %{conversationLabel}?",
+    "ASSIGN_CONFIRMATION_LABEL": "האם אתה בטוח שברצונך לשייך {conversationCount} {conversationLabel} ל-",
+    "UNASSIGN_CONFIRMATION_LABEL": "האם אתה בטוח שברצונך לבטל שיוך {conversationCount} {conversationLabel}?",
     "GO_BACK_LABEL": "חזור",
     "ASSIGN_LABEL": "שייך",
     "YES": "כן",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Assign labels",
-      "NO_LABELS_FOUND": "לא נצאו תוויות עבור",
+      "NO_LABELS_FOUND": "לא נמצאו תוויות",
       "ASSIGN_SELECTED_LABELS": "שייך תוויות נבחרות",
       "ASSIGN_SUCCESFUL": "תוויות שוייכו בהצלחה.",
       "ASSIGN_FAILED": "Failed to assign labels. Please try again."

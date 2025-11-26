@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} conversations sélectionnées",
+    "CONVERSATIONS_SELECTED": "{conversationCount} conversations sélectionnées",
     "AGENT_SELECT_LABEL": "Sélectionner un agent",
-    "ASSIGN_CONFIRMATION_LABEL": "Êtes-vous sûr de vouloir assigner %{conversationCount} %{conversationLabel} à",
-    "UNASSIGN_CONFIRMATION_LABEL": "Êtes-vous sûr de vouloir retirer l'affectation de %{conversationCount} %{conversationLabel}?",
+    "ASSIGN_CONFIRMATION_LABEL": "Êtes-vous sûr de vouloir assigner {conversationCount} {conversationLabel} à",
+    "UNASSIGN_CONFIRMATION_LABEL": "Êtes-vous sûr de vouloir retirer l'affectation de {conversationCount} {conversationLabel}?",
     "GO_BACK_LABEL": "Retour",
     "ASSIGN_LABEL": "Assigner",
     "YES": "Oui",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Assigner une étiquette",
-      "NO_LABELS_FOUND": "Aucune étiquette trouvée pour",
+      "NO_LABELS_FOUND": "Aucune étiquette trouvée",
       "ASSIGN_SELECTED_LABELS": "Assigner les étiquettes sélectionnées",
       "ASSIGN_SUCCESFUL": "Étiquettes attribuées avec succès.",
       "ASSIGN_FAILED": "Impossible d'attribuer les étiquettes, veuillez réessayer."

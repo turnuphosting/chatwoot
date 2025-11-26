@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} conversaciones seleccionadas",
+    "CONVERSATIONS_SELECTED": "{conversationCount} conversaciones seleccionadas",
     "AGENT_SELECT_LABEL": "Seleccionar agente",
-    "ASSIGN_CONFIRMATION_LABEL": "¿Está seguro que desea asignar %{conversationCount} %{conversationLabel} a",
-    "UNASSIGN_CONFIRMATION_LABEL": "¿Está seguro de desasignar %{conversationCount} %{conversationLabel}?",
+    "ASSIGN_CONFIRMATION_LABEL": "¿Está seguro que desea asignar {conversationCount} {conversationLabel} a",
+    "UNASSIGN_CONFIRMATION_LABEL": "¿Está seguro de desasignar {conversationCount} {conversationLabel}?",
     "GO_BACK_LABEL": "Volver",
     "ASSIGN_LABEL": "Asignar",
     "YES": "Si",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Asignar etiqueta",
-      "NO_LABELS_FOUND": "No se encontraron etiquetas para",
+      "NO_LABELS_FOUND": "No se encontraron etiquetas",
       "ASSIGN_SELECTED_LABELS": "Asignar etiquetas seleccionadas",
       "ASSIGN_SUCCESFUL": "Etiquetas asignadas correctamente.",
       "ASSIGN_FAILED": "Error al asignar etiquetas, inténtalo de nuevo."

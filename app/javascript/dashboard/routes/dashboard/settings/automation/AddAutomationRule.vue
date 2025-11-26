@@ -2,6 +2,7 @@
 import { mapGetters } from 'vuex';
 import FilterInputBox from 'dashboard/components/widgets/FilterInput/Index.vue';
 import AutomationActionInput from 'dashboard/components/widgets/AutomationActionInput.vue';
+import NextButton from 'dashboard/components-next/button/Button.vue';
 import { useAutomation } from 'dashboard/composables/useAutomation';
 import { validateAutomation } from 'dashboard/helper/validations';
 import {
@@ -12,15 +13,34 @@ import {
   getCustomAttributeType,
   showActionInput,
 } from 'dashboard/helper/automationHelper';
-import {
-  AUTOMATION_RULE_EVENTS,
-  AUTOMATION_ACTION_TYPES,
-  AUTOMATIONS,
-} from './constants';
+import { AUTOMATION_RULE_EVENTS, AUTOMATION_ACTION_TYPES } from './constants';
+
+const start_value = {
+  name: null,
+  description: null,
+  event_name: 'conversation_created',
+  conditions: [
+    {
+      attribute_key: 'status',
+      filter_operator: 'equal_to',
+      values: '',
+      query_operator: 'and',
+      custom_attribute_type: '',
+    },
+  ],
+  actions: [
+    {
+      action_name: 'assign_agent',
+      action_params: [],
+    },
+  ],
+};
+
 export default {
   components: {
     FilterInputBox,
     AutomationActionInput,
+    NextButton,
   },
   props: {
     onClose: {
@@ -28,8 +48,11 @@ export default {
       default: () => {},
     },
   },
+  emits: ['saveAutomation'],
   setup() {
     const {
+      automation,
+      automationTypes,
       onEventChange,
       getConditionDropdownValues,
       appendNewCondition,
@@ -40,8 +63,10 @@ export default {
       resetAction,
       getActionDropdownValues,
       manifestCustomAttributes,
-    } = useAutomation();
+    } = useAutomation(start_value);
     return {
+      automation,
+      automationTypes,
       onEventChange,
       getConditionDropdownValues,
       appendNewCondition,
@@ -56,31 +81,9 @@ export default {
   },
   data() {
     return {
-      automationTypes: JSON.parse(JSON.stringify(AUTOMATIONS)),
       automationRuleEvent: AUTOMATION_RULE_EVENTS[0].key,
-      automationRuleEvents: AUTOMATION_RULE_EVENTS,
       automationMutated: false,
       show: true,
-      automation: {
-        name: null,
-        description: null,
-        event_name: 'conversation_created',
-        conditions: [
-          {
-            attribute_key: 'status',
-            filter_operator: 'equal_to',
-            values: '',
-            query_operator: 'and',
-            custom_attribute_type: '',
-          },
-        ],
-        actions: [
-          {
-            action_name: 'assign_agent',
-            action_params: [],
-          },
-        ],
-      },
       showDeleteConfirmationModal: false,
       allCustomAttributes: [],
       mode: 'create',
@@ -92,6 +95,12 @@ export default {
       accountId: 'getCurrentAccountId',
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
     }),
+    automationRuleEvents() {
+      return AUTOMATION_RULE_EVENTS.map(event => ({
+        ...event,
+        value: this.$t(`AUTOMATION.EVENTS.${event.value}`),
+      }));
+    },
     hasAutomationMutated() {
       if (
         this.automation.conditions[0].values ||
@@ -101,10 +110,14 @@ export default {
       return false;
     },
     automationActionTypes() {
-      const isSLAEnabled = this.isFeatureEnabled('sla');
-      return isSLAEnabled
+      const actionTypes = this.isFeatureEnabled('sla')
         ? AUTOMATION_ACTION_TYPES
-        : AUTOMATION_ACTION_TYPES.filter(action => action.key !== 'add_sla');
+        : AUTOMATION_ACTION_TYPES.filter(({ key }) => key !== 'add_sla');
+
+      return actionTypes.map(action => ({
+        ...action,
+        label: this.$t(`AUTOMATION.ACTIONS.${action.label}`),
+      }));
     },
   },
   mounted() {
@@ -115,7 +128,7 @@ export default {
     this.$store.dispatch('labels/get');
     this.$store.dispatch('campaigns/get');
     this.allCustomAttributes = this.$store.getters['attributes/getAttributes'];
-    this.manifestCustomAttributes(this.automationTypes);
+    this.manifestCustomAttributes();
   },
   methods: {
     getAttributes,
@@ -132,6 +145,26 @@ export default {
         const automation = generateAutomationPayload(this.automation);
         this.$emit('saveAutomation', automation, this.mode);
       }
+    },
+    getTranslatedAttributes(type, event) {
+      return getAttributes(type, event).map(attribute => {
+        // Skip translation
+        // 1. If customAttributeType key is present then its rendering attributes from API
+        // 2. If contact_custom_attribute or conversation_custom_attribute is present then its rendering section title
+        const skipTranslation =
+          attribute.customAttributeType ||
+          [
+            'contact_custom_attribute',
+            'conversation_custom_attribute',
+          ].includes(attribute.key);
+
+        return {
+          ...attribute,
+          name: skipTranslation
+            ? attribute.name
+            : this.$t(`AUTOMATION.ATTRIBUTES.${attribute.name}`),
+        };
+      });
     },
   },
 };
@@ -182,7 +215,7 @@ export default {
           </label>
           <p
             v-if="hasAutomationMutated"
-            class="text-xs text-right text-green-500 dark:text-green-500"
+            class="text-xs text-right text-n-teal-10 pt-1"
           >
             {{ $t('AUTOMATION.FORM.RESET_MESSAGE') }}
           </p>
@@ -193,14 +226,14 @@ export default {
             {{ $t('AUTOMATION.ADD.FORM.CONDITIONS.LABEL') }}
           </label>
           <div
-            class="w-full p-4 mb-4 border border-solid rounded-lg bg-slate-25 dark:bg-slate-700 border-slate-50 dark:border-slate-700"
+            class="w-full p-4 mb-4 border border-solid rounded-lg bg-n-slate-2 dark:bg-n-solid-2 border-n-strong"
           >
             <FilterInputBox
               v-for="(condition, i) in automation.conditions"
               :key="i"
               v-model="automation.conditions[i]"
               :filter-attributes="
-                getAttributes(automationTypes, automation.event_name)
+                getTranslatedAttributes(automationTypes, automation.event_name)
               "
               :input-type="
                 getInputType(
@@ -237,26 +270,18 @@ export default {
                   ? $t(`AUTOMATION.ERRORS.${errors[`condition_${i}`]}`)
                   : ''
               "
-              @resetFilter="
-                resetFilter(
-                  automation,
-                  automationTypes,
-                  i,
-                  automation.conditions[i]
-                )
-              "
-              @removeFilter="removeFilter(automation, i)"
+              @reset-filter="resetFilter(i, automation.conditions[i])"
+              @remove-filter="removeFilter(i)"
             />
             <div class="mt-4">
-              <woot-button
-                icon="add"
-                color-scheme="success"
-                variant="smooth"
-                size="small"
-                @click="appendNewCondition(automation)"
-              >
-                {{ $t('AUTOMATION.ADD.CONDITION_BUTTON_LABEL') }}
-              </woot-button>
+              <NextButton
+                icon="i-lucide-plus"
+                blue
+                faded
+                sm
+                :label="$t('AUTOMATION.ADD.CONDITION_BUTTON_LABEL')"
+                @click="appendNewCondition"
+              />
             </div>
           </div>
         </section>
@@ -267,7 +292,7 @@ export default {
             {{ $t('AUTOMATION.ADD.FORM.ACTIONS.LABEL') }}
           </label>
           <div
-            class="w-full p-4 mb-4 border border-solid rounded-lg bg-slate-25 dark:bg-slate-700 border-slate-50 dark:border-slate-700"
+            class="w-full p-4 mb-4 border border-solid rounded-lg bg-n-slate-2 dark:bg-n-solid-2 border-n-strong"
           >
             <AutomationActionInput
               v-for="(action, i) in automation.actions"
@@ -288,31 +313,38 @@ export default {
                   ? $t(`AUTOMATION.ERRORS.${errors[`action_${i}`]}`)
                   : ''
               "
-              @resetAction="resetAction(automation, i)"
-              @removeAction="removeAction(automation, i)"
+              @reset-action="resetAction(i)"
+              @remove-action="removeAction(i)"
             />
             <div class="mt-4">
-              <woot-button
-                icon="add"
-                color-scheme="success"
-                variant="smooth"
-                size="small"
-                @click="appendNewAction(automation)"
-              >
-                {{ $t('AUTOMATION.ADD.ACTION_BUTTON_LABEL') }}
-              </woot-button>
+              <NextButton
+                icon="i-lucide-plus"
+                blue
+                faded
+                sm
+                :label="$t('AUTOMATION.ADD.ACTION_BUTTON_LABEL')"
+                @click="appendNewAction"
+              />
             </div>
           </div>
         </section>
         <!-- // Actions End -->
         <div class="w-full">
           <div class="flex flex-row justify-end w-full gap-2 px-0 py-2">
-            <woot-button class="button clear" @click.prevent="onClose">
-              {{ $t('AUTOMATION.ADD.CANCEL_BUTTON_TEXT') }}
-            </woot-button>
-            <woot-button @click="emitSaveAutomation">
-              {{ $t('AUTOMATION.ADD.SUBMIT') }}
-            </woot-button>
+            <NextButton
+              faded
+              slate
+              type="reset"
+              :label="$t('AUTOMATION.ADD.CANCEL_BUTTON_TEXT')"
+              @click.prevent="onClose"
+            />
+            <NextButton
+              solid
+              blue
+              type="submit"
+              :label="$t('AUTOMATION.ADD.SUBMIT')"
+              @click="emitSaveAutomation"
+            />
           </div>
         </div>
       </div>

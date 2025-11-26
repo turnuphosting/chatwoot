@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} σινομιλίες επιλέχθηκαν",
+    "CONVERSATIONS_SELECTED": "{conversationCount} σινομιλίες επιλέχθηκαν",
     "AGENT_SELECT_LABEL": "Επιλογή πράκτορα",
-    "ASSIGN_CONFIRMATION_LABEL": "Είσαστε σίγουροι ότι θέλετε να αντιστοιχίσετε %{conversationCount} %{conversationLabel} στον",
-    "UNASSIGN_CONFIRMATION_LABEL": "Είσαστε σίγουροι ότι θέλετε να αφαιρέσετε την αντιστοίχιση %{conversationCount} %{conversationLabel} στον;",
+    "ASSIGN_CONFIRMATION_LABEL": "Είσαστε σίγουροι ότι θέλετε να αντιστοιχίσετε {conversationCount} {conversationLabel} στον",
+    "UNASSIGN_CONFIRMATION_LABEL": "Είσαστε σίγουροι ότι θέλετε να αφαιρέσετε την αντιστοίχιση {conversationCount} {conversationLabel} στον;",
     "GO_BACK_LABEL": "Πίσω",
     "ASSIGN_LABEL": "Αντιστοίχιση",
     "YES": "Ναι",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Assign labels",
-      "NO_LABELS_FOUND": "Δεν βρέθηκαν πρότυπα για",
+      "NO_LABELS_FOUND": "Δεν βρέθηκαν ετικέτες",
       "ASSIGN_SELECTED_LABELS": "Ανάθεση επιλεγμένων ετικετών",
       "ASSIGN_SUCCESFUL": "Επιτυχής ανάθεση ετικετών.",
       "ASSIGN_FAILED": "Failed to assign labels. Please try again."

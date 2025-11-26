@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} konuşma seçildi",
+    "CONVERSATIONS_SELECTED": "{conversationCount} konuşma seçildi",
     "AGENT_SELECT_LABEL": "Temsilci seçin",
-    "ASSIGN_CONFIRMATION_LABEL": "%{conversationCount} %{conversationLabel} atanacak. Emin misiniz?",
-    "UNASSIGN_CONFIRMATION_LABEL": "%{conversationCount} %{conversationLabel} atanmamış yapılacak. Emin misiniz?",
+    "ASSIGN_CONFIRMATION_LABEL": "{conversationCount} {conversationLabel} atanacak. Emin misiniz?",
+    "UNASSIGN_CONFIRMATION_LABEL": "{conversationCount} {conversationLabel} atanmamış yapılacak. Emin misiniz?",
     "GO_BACK_LABEL": "Geri git",
     "ASSIGN_LABEL": "Atama yap",
     "YES": "Evet",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Etiket atama",
-      "NO_LABELS_FOUND": "İçin etiket bulunamadı",
+      "NO_LABELS_FOUND": "Etiket bulunamadı",
       "ASSIGN_SELECTED_LABELS": "Seçili etiketleri atama",
       "ASSIGN_SUCCESFUL": "Etiketler başarıyla atandı.",
       "ASSIGN_FAILED": "Etiketler atanırken bir hata oluştu. Lütfen tekrar deneyin."

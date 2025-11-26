@@ -1,5 +1,5 @@
 <script setup>
-import { useI18n } from 'dashboard/composables/useI18n';
+import { useI18n } from 'vue-i18n';
 import { useStoreGetters } from 'dashboard/composables/store';
 import { computed } from 'vue';
 
@@ -28,6 +28,8 @@ const i18nMap = {
   'Channel::Telegram': 'TELEGRAM',
   'Channel::Line': 'LINE',
   'Channel::Api': 'API',
+  'Channel::Instagram': 'INSTAGRAM',
+  'Channel::Voice': 'VOICE',
 };
 
 const twilioChannelName = () => {

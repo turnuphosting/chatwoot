@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} conversații selectate",
+    "CONVERSATIONS_SELECTED": "{conversationCount} conversații selectate",
     "AGENT_SELECT_LABEL": "Selectați agentul",
-    "ASSIGN_CONFIRMATION_LABEL": "Sigur doriți să atribuiți %{conversationCount} %{conversationLabel} la",
-    "UNASSIGN_CONFIRMATION_LABEL": "Sigur doriți să anulați atribuirea a %{conversationCount} %{conversationLabel}?",
+    "ASSIGN_CONFIRMATION_LABEL": "Sigur doriți să atribuiți {conversationCount} {conversationLabel} la",
+    "UNASSIGN_CONFIRMATION_LABEL": "Sigur doriți să anulați atribuirea a {conversationCount} {conversationLabel}?",
     "GO_BACK_LABEL": "Mergeți înapoi",
     "ASSIGN_LABEL": "Atribuiți",
     "YES": "Da",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Assign labels",
-      "NO_LABELS_FOUND": "Nu s-au găsit etichete pentru",
+      "NO_LABELS_FOUND": "Nu s-au găsit etichete",
       "ASSIGN_SELECTED_LABELS": "Atribuiți etichetele selectate",
       "ASSIGN_SUCCESFUL": "Etichete atribuite cu succes.",
       "ASSIGN_FAILED": "Failed to assign labels. Please try again."

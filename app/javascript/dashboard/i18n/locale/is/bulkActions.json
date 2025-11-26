@@ -1,9 +1,9 @@
 {
   "BULK_ACTION": {
-    "CONVERSATIONS_SELECTED": "%{conversationCount} samtöl valin",
+    "CONVERSATIONS_SELECTED": "{conversationCount} samtöl valin",
     "AGENT_SELECT_LABEL": "Velja þjónustufulltrúa",
-    "ASSIGN_CONFIRMATION_LABEL": "Ertu viss um að úthluta %{conversationCount} %{conversationLabel} á",
-    "UNASSIGN_CONFIRMATION_LABEL": "Ertu viss um að hætta við úthlutun %{conversationCount} %{conversationLabel}?",
+    "ASSIGN_CONFIRMATION_LABEL": "Ertu viss um að úthluta {conversationCount} {conversationLabel} á",
+    "UNASSIGN_CONFIRMATION_LABEL": "Ertu viss um að hætta við úthlutun {conversationCount} {conversationLabel}?",
     "GO_BACK_LABEL": "Go back",
     "ASSIGN_LABEL": "Úthluta",
     "YES": "Já",
@@ -24,7 +24,7 @@
     },
     "LABELS": {
       "ASSIGN_LABELS": "Assign labels",
-      "NO_LABELS_FOUND": "No labels found for",
+      "NO_LABELS_FOUND": "Engar merkingar fundust",
       "ASSIGN_SELECTED_LABELS": "Assign selected labels",
       "ASSIGN_SUCCESFUL": "Labels assigned successfully.",
       "ASSIGN_FAILED": "Failed to assign labels. Please try again."
